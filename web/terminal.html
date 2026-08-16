@@ -3,67 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Zero-Knowledge Wire Monitor • CSE 487</title>
+  <title>Terminal Relay Monitor • CSE 487</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="terminal.css">
 </head>
 <body class="term-body">
-  <div class="crt-overlay"></div>
-
-  <!-- Pure Live Wire Monitor Window -->
+  <!-- Minimalist Terminal Shell -->
   <div class="term-window">
     
-    <!-- Terminal Titlebar -->
-    <div class="term-titlebar">
-      <div class="term-controls">
-        <span class="term-dot dot-red"></span>
-        <span class="term-dot dot-yellow"></span>
-        <span class="term-dot dot-green"></span>
-      </div>
+    <!-- Simple Top Bar -->
+    <div class="term-top-bar">
       <div class="term-title">
-        LIVE WIRE MONITOR • ZERO-KNOWLEDGE RELAY SNIFFER (AES-256-GCM / CURVE25519)
+        root@relay-server:~# ./monitor_wire.sh --mode=zero-knowledge --cipher=AES-256-GCM
       </div>
-      <div class="term-actions">
-        <a href="index.html" class="term-nav-btn">LAUNCHPAD</a>
-      </div>
+      <a href="index.html" class="term-exit-btn">[EXIT TO LAUNCHPAD]</a>
     </div>
 
-    <!-- Live Telemetry Status Bar -->
-    <div class="term-stats-bar">
-      <div class="stat-item">
-        <span class="stat-label">STATUS:</span>
-        <span class="stat-val text-green">● LIVE WIRE STREAM</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-label">CIPHER:</span>
-        <span class="stat-val text-cyan">AES-256-GCM (AEAD)</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-label">KEY EXCHANGE:</span>
-        <span class="stat-val text-cyan">X25519 (CURVE25519)</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-label">FRAMES CAPTURED:</span>
-        <span class="stat-val text-yellow" id="statFrames">0</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-label">PLAINTEXT LEAKS:</span>
-        <span class="stat-val text-green" id="statLeaks">0 (0.00% - ZERO)</span>
-      </div>
+    <!-- Status Bar -->
+    <div class="term-status-line">
+      STATUS: ACTIVE | CIPHER: AES-256-GCM (AEAD) | KEY: X25519 (CURVE25519) | FRAMES: <span id="statFrames">0</span> | LEAKS: 0 (ZERO)
     </div>
 
-    <!-- Pure Incoming Wire Feed (No prompt, no extra text) -->
+    <!-- Pure Terminal Output Stream -->
     <div class="term-screen" id="termScreen">
-      <!-- Waiting state placeholder -->
-      <div class="term-empty-state" id="emptyState">
-        <div class="term-radar-pulse"></div>
-        <p class="text-cyan">LISTENING FOR INCOMING ENCRYPTED WIRE FRAMES...</p>
-        <span class="text-dim">Send a message between Syeda and Rukaiya to view live cryptographic packets</span>
+      <div class="term-waiting" id="emptyState">
+        > Listening on live WebSocket wire...<br>
+        > Waiting for incoming encrypted packets between Syeda and Rukaiya...
       </div>
-
-      <!-- Live incoming frames appended here -->
       <div id="termLogs"></div>
     </div>
 

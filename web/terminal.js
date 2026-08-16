@@ -1,7 +1,6 @@
 /**
- * Pure Live Wire Sniffer & Zero-Knowledge Monitor
- * 
- * Captures real-time encrypted packets and displays cryptographic metadata.
+ * Minimalist Terminal Wire Monitor
+ * No animations, pure terminal text stream.
  */
 
 const networkChannel = new BroadcastChannel('e2ee_wire_bus');
@@ -15,10 +14,9 @@ const termLogs = document.getElementById('termLogs');
 const termScreen = document.getElementById('termScreen');
 const emptyState = document.getElementById('emptyState');
 const statFrames = document.getElementById('statFrames');
-const statLeaks = document.getElementById('statLeaks');
 
 // ---------------------------------------------------------------------------
-// Real Multi-Device WebSocket Listener
+// Multi-Device WebSocket Relay Listener
 // ---------------------------------------------------------------------------
 
 let wsRelay = null;
@@ -66,24 +64,23 @@ networkChannel.onmessage = (e) => {
 };
 
 // ---------------------------------------------------------------------------
-// Frame Processing & Rendering
+// Frame Processing & Terminal Text Logging
 // ---------------------------------------------------------------------------
 
 function processIncomingFrame(pkt) {
-  // Prevent duplicate rendering if received from both WS and BroadcastChannel
+  // Prevent duplicate rendering
   const exists = terminalState.capturedPackets.some(p => p.nonce === pkt.nonce && p.seq === pkt.seq);
   if (exists) return;
 
   terminalState.framesCount += 1;
-  statFrames.innerText = terminalState.framesCount;
+  if (statFrames) statFrames.innerText = terminalState.framesCount;
   terminalState.capturedPackets.push(pkt);
 
-  // Hide empty state radar
+  // Hide initial waiting message
   if (emptyState) {
     emptyState.style.display = 'none';
   }
 
-  // Render glowing packet card
   logCapturedFrame(pkt);
 }
 
@@ -94,26 +91,26 @@ function logCapturedFrame(pkt) {
   const senderName = pkt.sender === 'Syeda' ? 'SYEDA HASAN' : (pkt.sender === 'Rukaiya' ? 'RUKAIYA BINTA HOSSAIN' : pkt.sender);
   const recipName = pkt.recipient === 'Syeda' ? 'SYEDA HASAN' : (pkt.recipient === 'Rukaiya' ? 'RUKAIYA BINTA HOSSAIN' : pkt.recipient);
 
-  const card = document.createElement('div');
-  card.className = 'term-log-card';
+  const block = document.createElement('div');
+  block.className = 'term-packet-block';
 
-  card.innerHTML = `
-    <div class="term-card-meta">
-      <span class="text-cyan">[WIRE_FRAME #${terminalState.framesCount}] ${senderName} ➔ ${recipName} | SEQ #${pkt.seq}</span>
-      <span class="text-dim">${timeStr}</span>
+  block.innerHTML = `
+    <div class="term-pkt-header">
+      <span>[FRAME #${terminalState.framesCount}] ${senderName} ➔ ${recipName} | SEQ: ${pkt.seq}</span>
+      <span class="term-pkt-meta">${timeStr}</span>
     </div>
-    <div class="text-dim">
-      NONCE (12B): <span class="text-yellow">${pkt.nonce}</span> | CIPHER: <span class="text-green">AES-256-GCM (AEAD)</span>
+    <div class="term-pkt-meta">
+      NONCE (12B): ${pkt.nonce} | CIPHER: AES-256-GCM (NIST SP 800-38D)
     </div>
-    <div class="term-card-body">
+    <div class="term-pkt-cipher">
       CIPHERTEXT (OPAQUE): ${pkt.ciphertext}
     </div>
-    <div class="text-dim" style="margin-top: 4px; display: flex; justify-content: space-between;">
-      <span>AUTHENTICATION TAG: <strong class="text-green">✔ 128-BIT GCM TAG VERIFIED</strong></span>
-      <span>STATUS: <strong class="text-green">✔ 0 PLAINTEXT LEAKS</strong></span>
+    <div class="term-pkt-footer">
+      <span>INTEGRITY: 128-BIT AUTH TAG VERIFIED</span>
+      <span>PLAINTEXT LEAKS: 0 (CONFIDENTIAL)</span>
     </div>
   `;
 
-  termLogs.appendChild(card);
+  termLogs.appendChild(block);
   termScreen.scrollTop = termScreen.scrollHeight;
 }
