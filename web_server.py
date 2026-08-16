@@ -32,7 +32,7 @@ HOST = "0.0.0.0"
 WEB_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "web")
 
 # In-memory relay state
-connected_clients: Dict[str, any] = {}       # username -> websocket
+all_client_sockets: Set[any] = set()         # all active websockets (phones + laptops)
 monitor_clients: Set[any] = set()            # set of monitor websockets
 registered_keys: Dict[str, str] = {}         # username -> public_key_b64
 message_history = []
@@ -113,6 +113,7 @@ async def process_http_request(connection, request):
 # ---------------------------------------------------------------------------
 
 async def ws_relay_handler(websocket):
+    all_client_sockets.add(websocket)
     client_type = "user"
     username = None
 
@@ -144,20 +145,22 @@ async def ws_relay_handler(websocket):
                     username = data.get("sender")
                     pub_b64 = data.get("pubB64", "")
                     if username:
-                        connected_clients[username] = websocket
                         if pub_b64:
-                            registered_keys[username] = pub_b64
+                            registered_keys[username.lower()] = pub_b64
                         console.print(f"[bold green]📱 Device Online:[/bold green] [cyan]{username}[/cyan]")
                         
                         # Deliver historical/offline messages destined for this user
-                        user_messages = [msg for msg in message_history if msg.get("recipient") == username]
+                        user_messages = [
+                            msg for msg in message_history 
+                            if str(msg.get("recipient", "")).lower() == username.lower()
+                        ]
                         if user_messages:
                             await websocket.send(json.dumps({
                                 "type": "USER_HISTORY_DUMP",
                                 "messages": user_messages
                             }))
 
-                # Direct Encrypted Message Relay
+                # Direct Encrypted Message Relay (Broadcast to all active receivers)
                 elif msg_type == "MSG_DIRECT":
                     sender = data.get("sender")
                     recipient = data.get("recipient")
@@ -184,30 +187,25 @@ async def ws_relay_handler(websocket):
                     if len(message_history) > 200:
                         message_history.pop(0)
 
-                    # 1. Forward to Recipient Phone
-                    if recipient in connected_clients:
-                        target_ws = connected_clients[recipient]
-                        try:
-                            await target_ws.send(json.dumps(packet_record))
-                        except Exception:
-                            connected_clients.pop(recipient, None)
-
-                    # 2. Broadcast to ALL connected Terminal Monitors (Sir's Screen)
-                    for mon_ws in list(monitor_clients):
-                        try:
-                            await mon_ws.send(json.dumps(packet_record))
-                        except Exception:
-                            monitor_clients.discard(mon_ws)
+                    # BROADCAST instantly to ALL active sockets (Phones + Monitors)
+                    # Every device receives the ciphertext instantly, but ONLY the recipient can decrypt!
+                    raw_broadcast = json.dumps(packet_record)
+                    for target_ws in list(all_client_sockets):
+                        if target_ws != websocket:
+                            try:
+                                await target_ws.send(raw_broadcast)
+                            except Exception:
+                                all_client_sockets.discard(target_ws)
+                                monitor_clients.discard(target_ws)
 
             except json.JSONDecodeError:
                 pass
     except websockets.exceptions.ConnectionClosed:
         pass
     finally:
-        if client_type == "monitor":
-            monitor_clients.discard(websocket)
-        elif username and username in connected_clients:
-            connected_clients.pop(username, None)
+        all_client_sockets.discard(websocket)
+        monitor_clients.discard(websocket)
+        if username:
             console.print(f"[bold yellow]🔌 Device Disconnected:[/bold yellow] [cyan]{username}[/cyan]")
 
 

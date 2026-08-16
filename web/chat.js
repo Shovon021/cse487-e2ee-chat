@@ -274,7 +274,8 @@ async function sendTextMessage(text) {
 // ---------------------------------------------------------------------------
 
 async function handleIncomingWireMessage(msg) {
-  if (msg.recipient !== clientState.me) return;
+  if (!msg || !msg.recipient) return;
+  if (String(msg.recipient).toLowerCase() !== String(clientState.me).toLowerCase()) return;
 
   // Deduplicate
   const msgKey = `${msg.nonce}_${msg.seq}`;
