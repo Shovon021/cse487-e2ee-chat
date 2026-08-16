@@ -1,6 +1,8 @@
 /**
- * Minimalist Terminal Wire Monitor
- * No animations, pure terminal text stream with auto-reconnection and history replay.
+ * Server & Database Wire Traffic Monitor Controller
+ * 
+ * Clean light-theme dashboard logging live encrypted packets.
+ * Newest input appears at the top (first place).
  */
 
 const networkChannel = new BroadcastChannel('e2ee_wire_bus');
@@ -11,7 +13,6 @@ const terminalState = {
 };
 
 const termLogs = document.getElementById('termLogs');
-const termScreen = document.getElementById('termScreen');
 const emptyState = document.getElementById('emptyState');
 const statFrames = document.getElementById('statFrames');
 
@@ -30,7 +31,7 @@ function initTerminalWebSocket() {
       wsRelay = new WebSocket(wsUrl);
 
       wsRelay.onopen = () => {
-        console.log("Terminal connected to WebSocket relay:", wsUrl);
+        console.log("Monitor connected to WebSocket relay:", wsUrl);
         wsRelay.send(JSON.stringify({ type: "REGISTER_MONITOR" }));
 
         clearInterval(wsHeartbeatTimer);
@@ -85,7 +86,7 @@ networkChannel.onmessage = (e) => {
 };
 
 // ---------------------------------------------------------------------------
-// Frame Processing & Terminal Text Logging
+// Frame Processing & Rendering (Newest on Top)
 // ---------------------------------------------------------------------------
 
 function processIncomingFrame(pkt) {
@@ -97,7 +98,7 @@ function processIncomingFrame(pkt) {
   if (statFrames) statFrames.innerText = terminalState.framesCount;
   terminalState.capturedPackets.push(pkt);
 
-  // Hide initial waiting message
+  // Hide initial empty state message
   if (emptyState) {
     emptyState.style.display = 'none';
   }
@@ -109,33 +110,43 @@ function logCapturedFrame(pkt) {
   const dateObj = pkt.timestamp ? new Date(pkt.timestamp * 1000) : new Date();
   const timeStr = dateObj.toLocaleTimeString() + '.' + String(dateObj.getMilliseconds()).padStart(3, '0');
   
-  const senderName = pkt.sender === 'Syeda' ? 'SYEDA HASAN' : (pkt.sender === 'Rukaiya' ? 'RUKAIYA BINTA HOSSAIN' : pkt.sender);
-  const recipName = pkt.recipient === 'Syeda' ? 'SYEDA HASAN' : (pkt.recipient === 'Rukaiya' ? 'RUKAIYA BINTA HOSSAIN' : pkt.recipient);
+  const senderName = pkt.sender === 'Syeda' ? 'Syeda Hasan' : (pkt.sender === 'Rukaiya' ? 'Rukaiya Binta Hossain' : pkt.sender);
+  const recipName = pkt.recipient === 'Syeda' ? 'Syeda Hasan' : (pkt.recipient === 'Rukaiya' ? 'Rukaiya Binta Hossain' : pkt.recipient);
 
-  const block = document.createElement('div');
-  block.className = 'term-packet-block';
+  const card = document.createElement('div');
+  card.className = 'packet-card';
 
-  block.innerHTML = `
-    <div class="term-pkt-header">
-      <span class="term-pkt-title">CAPTURED PACKET #${terminalState.framesCount} (LATEST ON WIRE)</span>
-      <span class="term-pkt-meta">${timeStr}</span>
+  card.innerHTML = `
+    <div class="packet-card-header">
+      <span class="packet-badge-title">CAPTURED WIRE PACKET #${terminalState.framesCount} (LATEST)</span>
+      <span class="packet-time">${timeStr}</span>
     </div>
-    <div class="term-pkt-route">
-      <strong>SENDER:</strong> ${senderName} &nbsp; ──► &nbsp; <strong>RECIPIENT:</strong> ${recipName} &nbsp; | &nbsp; <strong>SEQ NUMBER:</strong> ${pkt.seq}
+    <div class="packet-route-row">
+      <span class="route-sender">Sender: <strong>${escapeHtml(senderName)}</strong></span>
+      <span class="route-arrow">──►</span>
+      <span class="route-recipient">Recipient: <strong>${escapeHtml(recipName)}</strong></span>
+      <span class="route-seq">Sequence: #${pkt.seq}</span>
     </div>
-    <div class="term-pkt-meta">
-      <strong>ALGORITHM:</strong> AES-256-GCM (NIST SP 800-38D) &nbsp;|&nbsp; <strong>NONCE (12-BYTE IV):</strong> ${pkt.nonce}
+    <div class="packet-meta-row">
+      <span class="packet-meta-item">Encryption Algorithm: <strong>AES-256-GCM (NIST SP 800-38D)</strong></span>
+      <span class="packet-meta-item">Nonce (12-Byte IV): <strong>${escapeHtml(pkt.nonce)}</strong></span>
     </div>
-    <div class="term-pkt-cipher">
-      <strong>RAW CIPHERTEXT ON WIRE & IN DATABASE:</strong><br>
-      ${pkt.ciphertext}
+    <div class="packet-cipher-box">
+      <span class="cipher-box-label">Raw Ciphertext on Wire & in Server Database:</span>
+      <div class="cipher-box-code">${escapeHtml(pkt.ciphertext)}</div>
     </div>
-    <div class="term-pkt-footer">
-      <span>INTEGRITY: [VALID] 128-BIT GCM AUTH TAG VERIFIED</span>
-      <span>CONFIDENTIALITY: [PASSED] 0 PLAINTEXT LEAKS (SERVER/DATABASE CANNOT READ)</span>
+    <div class="packet-footer-row">
+      <span class="badge-integrity">Integrity: 128-Bit GCM Auth Tag Validated</span>
+      <span class="badge-confidentiality">Confidentiality: 0 Plaintext Leaks (Server & Database Cannot Decrypt)</span>
     </div>
   `;
 
-  // Prepend to show newest message at the top (first place on screen)
-  termLogs.insertBefore(block, termLogs.firstChild);
+  // Prepend to insert newest packet at the top (first place)
+  termLogs.insertBefore(card, termLogs.firstChild);
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.innerText = text;
+  return div.innerHTML;
 }

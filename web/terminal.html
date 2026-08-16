@@ -3,37 +3,63 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Terminal Relay Monitor • CSE 487</title>
+  <title>SERVER & DATABASE WIRE TRAFFIC MONITOR</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="terminal.css">
 </head>
-<body class="term-body">
-  <!-- Minimalist Terminal Shell -->
-  <div class="term-window">
+<body class="monitor-light-body">
+  <div class="monitor-app-container">
     
-    <!-- Simple Top Bar -->
-    <div class="term-top-bar">
-      <div class="term-title">
-        SERVER & DATABASE WIRE TRAFFIC MONITOR (ZERO-KNOWLEDGE RELAY)
+    <!-- Top Centered Header Section (White Background) -->
+    <header class="monitor-header-section">
+      <div class="monitor-nav-bar">
+        <span class="system-tag">CSE 487 Computer & Cyber Security</span>
+        <a href="index.html" class="monitor-launch-link">Launchpad</a>
       </div>
-      <a href="index.html" class="term-exit-btn">[LAUNCHPAD]</a>
-    </div>
-
-    <!-- Status Bar -->
-    <div class="term-status-line">
-      SERVER STATUS: ONLINE | DATABASE STATUS: ZERO-PLAINTEXT ENCRYPTED | CIPHER: AES-256-GCM | KEY EXCHANGE: CURVE25519 (X25519) | TOTAL FRAMES: <span id="statFrames">0</span> | PLAINTEXT LEAKS: 0 (ZERO)
-    </div>
-
-    <!-- Pure Terminal Output Stream -->
-    <div class="term-screen" id="termScreen">
-      <div class="term-waiting" id="emptyState">
-        > Listening on live WebSocket wire...<br>
-        > Waiting for incoming encrypted packets between Syeda and Rukaiya...
+      
+      <h1 class="monitor-main-title">SERVER & DATABASE WIRE TRAFFIC MONITOR</h1>
+      <p class="monitor-subtitle">Zero-Knowledge Relay Server & Encrypted Database Storage Inspector</p>
+      
+      <!-- Telemetry Status Grid (Center Aligned) -->
+      <div class="monitor-telemetry-grid">
+        <div class="telemetry-card">
+          <span class="telemetry-label">Server State</span>
+          <span class="telemetry-value text-success">Online (Zero-Knowledge)</span>
+        </div>
+        <div class="telemetry-card">
+          <span class="telemetry-label">Database Storage</span>
+          <span class="telemetry-value text-success">Zero Plaintext Stored</span>
+        </div>
+        <div class="telemetry-card">
+          <span class="telemetry-label">Symmetric Cipher</span>
+          <span class="telemetry-value text-primary">AES-256-GCM (AEAD)</span>
+        </div>
+        <div class="telemetry-card">
+          <span class="telemetry-label">Key Exchange</span>
+          <span class="telemetry-value text-primary">Curve25519 (X25519)</span>
+        </div>
+        <div class="telemetry-card">
+          <span class="telemetry-label">Captured Frames</span>
+          <span class="telemetry-value text-accent" id="statFrames">0</span>
+        </div>
+        <div class="telemetry-card">
+          <span class="telemetry-label">Plaintext Leaks</span>
+          <span class="telemetry-value text-success" id="statLeaks">0 (Zero Leaks)</span>
+        </div>
       </div>
-      <div id="termLogs"></div>
-    </div>
+    </header>
+
+    <!-- Main Live Stream (Newest Packets Appear on Top) -->
+    <main class="monitor-feed-section" id="termScreen">
+      <div class="monitor-empty-state" id="emptyState">
+        <h3>Listening on Live Wire & Database Stream...</h3>
+        <p>Waiting for encrypted packets between Syeda Hasan and Rukaiya Binta Hossain.<br>Incoming messages will appear here at the top in real time.</p>
+      </div>
+      
+      <div id="termLogs" class="monitor-logs-container"></div>
+    </main>
 
   </div>
 
