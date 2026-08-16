@@ -333,14 +333,29 @@ networkChannel.onmessage = async (e) => {
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Update Header with Current User and Peer
-  document.getElementById('peerUsername').innerText = clientState.profile.peerIgHandle;
-  document.getElementById('peerAvatar').innerText = clientState.profile.peerAvatarChar;
-  document.getElementById('currentMyUsername').innerText = `${clientState.profile.fullName} (@${clientState.profile.igHandle})`;
-  document.getElementById('safetyPeerName').innerText = clientState.profile.peerFullName;
+  const peerNameEl = document.getElementById('peerFullName');
+  if (peerNameEl) peerNameEl.innerText = clientState.profile.peerFullName;
+
+  const peerHandleEl = document.getElementById('peerHandle');
+  if (peerHandleEl) peerHandleEl.innerText = `@${clientState.profile.peerIgHandle}`;
+
+  const peerAvatarEl = document.getElementById('peerAvatar');
+  if (peerAvatarEl) peerAvatarEl.innerText = clientState.profile.peerAvatarChar;
+
+  const noticePeerEl = document.getElementById('e2eeNoticePeer');
+  if (noticePeerEl) noticePeerEl.innerText = clientState.profile.peerFullName;
+
+  const currentMyUserEl = document.getElementById('currentMyUsername');
+  if (currentMyUserEl) currentMyUserEl.innerText = `${clientState.profile.fullName} (@${clientState.profile.igHandle})`;
+
+  const safetyPeerEl = document.getElementById('safetyPeerName');
+  if (safetyPeerEl) safetyPeerEl.innerText = clientState.profile.peerFullName;
 
   const switchLink = document.getElementById('switchUserLink');
-  switchLink.innerText = `Switch to ${clientState.profile.peerFullName}`;
-  switchLink.href = `chat.html?user=${clientState.peer}`;
+  if (switchLink) {
+    switchLink.innerText = `Switch to ${clientState.profile.peerFullName}`;
+    switchLink.href = `chat.html?user=${clientState.peer}`;
+  }
 
   document.getElementById('btnBack').addEventListener('click', () => {
     window.location.href = 'index.html';

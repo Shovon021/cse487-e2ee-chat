@@ -6,43 +6,56 @@
   <title>Direct • Instagram E2EE</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="chat.css">
 </head>
-<body class="ig-body">
-  <!-- Instagram Direct Chat Container -->
+<body class="ig-light-body">
+  <!-- Instagram Direct Chat Container (Light Theme) -->
   <div class="ig-chat-app">
     
     <!-- Top Header -->
     <header class="ig-header">
       <div class="ig-header-left">
-        <button class="ig-icon-btn" id="btnBack" title="Switch User">
-          <svg aria-label="Back" height="24" viewBox="0 0 24 24" width="24"><path d="M21 17.502a.997.997 0 0 1-.707-.293L12 8.913l-8.293 8.296a1 1 0 1 1-1.414-1.414l9-9.004a1.03 1.03 0 0 1 1.414 0l9 9.004A1 1 0 0 1 21 17.502Z" transform="rotate(-90 12 12)" fill="currentColor"></path></svg>
+        <button class="ig-icon-btn" id="btnBack" title="Back to Launchpad">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
         </button>
-        <div class="ig-profile-header">
+        <div class="ig-profile-header" id="btnHeaderProfile">
           <div class="ig-avatar-wrapper">
-            <div class="ig-avatar" id="peerAvatar">B</div>
+            <div class="ig-avatar" id="peerAvatar">R</div>
             <span class="ig-active-dot"></span>
           </div>
           <div class="ig-profile-info">
-            <h2 id="peerUsername">bob_security</h2>
+            <h2 id="peerFullName">Rukaiya Binta Hossain</h2>
             <p class="ig-status-text">
-              <span class="ig-lock-badge">🔒 E2EE</span> Active Now
+              <span id="peerHandle">@rukaiya_hossain</span> • <span class="ig-lock-badge">🔒 Active Now</span>
             </p>
           </div>
         </div>
       </div>
       
       <div class="ig-header-right">
-        <!-- Call & Video Icons -->
+        <!-- Call SVG -->
         <button class="ig-icon-btn" title="Audio Call">
-          <svg aria-label="Audio Call" height="24" viewBox="0 0 24 24" width="24"><path d="M18.227 23.994A18.064 18.064 0 0 1 0 5.772 5.766 5.766 0 0 1 5.72 0a4.34 4.34 0 0 1 3.064 1.25 4.377 4.377 0 0 1 1.26 3.09 3.96 3.96 0 0 1-.85 2.508l-.04.05-1.21 1.209a1.597 1.597 0 0 0-.007 2.253 12.35 12.35 0 0 0 3.197 3.197 1.597 1.597 0 0 0 2.253-.007l1.21-1.21.05-.04a3.96 3.96 0 0 1 2.507-.85 4.377 4.377 0 0 1 3.09 1.26A4.34 4.34 0 0 1 24 15.773a5.766 5.766 0 0 1-5.773 5.721v-3.5Z" fill="currentColor"></path></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+          </svg>
         </button>
+        <!-- Video SVG -->
         <button class="ig-icon-btn" title="Video Call">
-          <svg aria-label="Video Call" height="24" viewBox="0 0 24 24" width="24"><path d="M23.5 6.502a.5.5 0 0 0-.824-.378l-4.676 3.896V7.5a2.5 2.5 0 0 0-2.5-2.5H2.5A2.5 2.5 0 0 0 0 7.5v9A2.5 2.5 0 0 0 2.5 19h13a2.5 2.5 0 0 0 2.5-2.5v-2.52l4.676 3.896a.5.5 0 0 0 .824-.378v-11Z" fill="currentColor"></path></svg>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="23 7 16 12 23 17 23 7"></polygon>
+            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+          </svg>
         </button>
-        <button class="ig-icon-btn" id="btnInfo" title="Safety Number & Encryption Details">
-          <svg aria-label="Details" height="24" viewBox="0 0 24 24" width="24"><circle cx="12.001" cy="12.005" fill="none" r="10.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></circle><circle cx="11.819" cy="7.709" r="1.25" fill="currentColor"></circle><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="10.569" x2="13.432" y1="16.777" y2="16.777"></line><polyline fill="none" points="10.569 11.05 12 11.05 12 16.777" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></polyline></svg>
+        <!-- Info (i) SVG -->
+        <button class="ig-icon-btn" id="btnInfo" title="Safety Number & Encryption Info">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
         </button>
       </div>
     </header>
@@ -52,35 +65,52 @@
       <div class="ig-chat-date" id="chatDate">Today</div>
       
       <div class="ig-e2ee-notice">
-        <span class="ig-notice-icon">🔒</span>
-        <p>Messages and calls are end-to-end encrypted with <strong>AES-256-GCM</strong>. No one outside of this chat, not even the server, can read them.</p>
+        <svg class="ig-notice-lock-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        <p>Messages and calls are end-to-end encrypted with <strong>AES-256-GCM</strong>. Only you and <strong id="e2eeNoticePeer">Rukaiya</strong> have the keys to read them.</p>
       </div>
 
       <!-- Messages dynamically appended here -->
     </main>
 
-    <!-- Bottom Input Area (Instagram Pill Style) -->
+    <!-- Bottom Input Area (Instagram Pill Style - Light Theme) -->
     <footer class="ig-footer">
       <div class="ig-input-pill">
-        <!-- Camera Blue Button -->
+        <!-- Blue Camera SVG Button -->
         <button class="ig-camera-btn" title="Camera">
-          <svg aria-label="Camera" height="18" viewBox="0 0 24 24" width="18"><path d="M12 9a4.5 4.5 0 1 0 4.5 4.5A4.5 4.5 0 0 0 12 9Zm0 7a2.5 2.5 0 1 1 2.5-2.5A2.5 2.5 0 0 1 12 16Z" fill="#fff"></path><path d="M20.5 4.5h-3.28l-.74-1.48A2.5 2.5 0 0 0 14.24 1.5H9.76a2.5 2.5 0 0 0-2.24 1.52L6.78 4.5H3.5A3.5 3.5 0 0 0 0 8v11a3.5 3.5 0 0 0 3.5 3.5h17a3.5 3.5 0 0 0 3.5-3.5V8a3.5 3.5 0 0 0-3.5-3.5Zm1.5 14.5a1.5 1.5 0 0 1-1.5 1.5h-17A1.5 1.5 0 0 1 2 19V8a1.5 1.5 0 0 1 1.5-1.5h3.9a1 1 0 0 0 .89-.55l.95-1.9a.5.5 0 0 1 .45-.3h4.62a.5.5 0 0 1 .45.3l.95 1.9a1 1 0 0 0 .89.55h3.9A1.5 1.5 0 0 1 22 8Z" fill="#fff"></path></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+            <circle cx="12" cy="13" r="4"></circle>
+          </svg>
         </button>
 
         <input type="text" id="chatInput" placeholder="Message..." autocomplete="off">
 
         <div class="ig-input-icons" id="inputActionIcons">
-          <!-- Mic -->
-          <button class="ig-inline-btn" title="Voice Message">
-            <svg aria-label="Voice Clip" height="22" viewBox="0 0 24 24" width="22"><path d="M12 15a4 4 0 0 0 4-4V5a4 4 0 0 0-8 0v6a4 4 0 0 0 4 4Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4M8 22h8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+          <!-- Mic SVG -->
+          <button class="ig-inline-btn" title="Voice Clip">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#262626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+              <line x1="12" y1="19" x2="12" y2="23"></line>
+              <line x1="8" y1="23" x2="16" y2="23"></line>
+            </svg>
           </button>
-          <!-- Image -->
+          <!-- Image Gallery SVG -->
           <button class="ig-inline-btn" title="Send Photo">
-            <svg aria-label="Add Photo" height="22" viewBox="0 0 24 24" width="22"><rect fill="none" height="18" rx="3" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="18" x="3" y="3"></rect><circle cx="8.5" cy="8.5" fill="none" r="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></circle><polyline fill="none" points="21 15 16 10 5 21" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></polyline></svg>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#262626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
           </button>
-          <!-- Sticker -->
-          <button class="ig-inline-btn" title="Stickers">
-            <svg aria-label="Stickers" height="22" viewBox="0 0 24 24" width="22"><path d="M12 21.5a9.5 9.5 0 1 0-9.5-9.5c0 2.2.8 4.2 2.1 5.8l-1.6 3.7 3.7-1.6c1.6 1.1 3.4 1.6 5.3 1.6Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+          <!-- Heart / Sticker SVG -->
+          <button class="ig-inline-btn" title="Like">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#262626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
           </button>
         </div>
 
@@ -88,7 +118,7 @@
       </div>
     </footer>
 
-    <!-- Details / Safety Number Modal (Instagram Styled) -->
+    <!-- Details / Safety Number Modal (Light Theme) -->
     <div class="ig-modal-backdrop" id="infoModal">
       <div class="ig-modal-sheet">
         <div class="ig-modal-handle"></div>
@@ -101,7 +131,7 @@
             <div class="ig-badge-shield">🛡️</div>
             <div>
               <h4>End-to-End Encrypted</h4>
-              <p>Key Agreement: Curve25519 (X25519) • Cipher: AES-256-GCM</p>
+              <p>Curve25519 (X25519) • AES-256-GCM • HKDF-SHA256</p>
             </div>
           </div>
 
@@ -111,15 +141,15 @@
               41829 08234 19284 82910 57291 93820
             </div>
             <p class="ig-safety-tip">
-              Compare this 30-digit security number with <strong id="safetyPeerName">Bob</strong> out-of-band (e.g. voice or video) to verify that no active Man-in-the-Middle attacker is intercepting your conversation.
+              Compare this 30-digit security code with <strong id="safetyPeerName">Rukaiya Binta Hossain</strong> to verify that no active Man-in-the-Middle attacker is intercepting your conversation.
             </p>
           </div>
 
           <div class="ig-user-switch-section">
-            <label class="ig-section-label">Logged In As:</label>
+            <label class="ig-section-label">Active User:</label>
             <div class="ig-user-switch-box">
-              <span id="currentMyUsername">Alice</span>
-              <a href="#" id="switchUserLink" class="ig-link">Switch to Bob</a>
+              <span id="currentMyUsername">Syeda Hasan (@syeda_hasan)</span>
+              <a href="#" id="switchUserLink" class="ig-link">Switch User</a>
             </div>
           </div>
         </div>
