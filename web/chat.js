@@ -142,6 +142,9 @@ async function initCryptoEngine() {
 
 function initWebSocketRelay() {
   function connect() {
+    // Send lightweight HTTP ping to wake up sleeping Render cloud instance
+    fetch(window.location.href, { method: 'HEAD', cache: 'no-store' }).catch(() => {});
+
     try {
       wsRelay = new WebSocket(wsUrl);
 
@@ -258,6 +261,8 @@ async function sendTextMessage(text) {
     wsRelay.send(JSON.stringify(payload));
   } else {
     pendingSendQueue.push(payload);
+    // Wake up server via HTTP request
+    fetch(window.location.href, { method: 'HEAD', cache: 'no-store' }).catch(() => {});
   }
 
   // 3. Save to localStorage history
