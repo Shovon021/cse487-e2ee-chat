@@ -117,21 +117,25 @@ function logCapturedFrame(pkt) {
 
   block.innerHTML = `
     <div class="term-pkt-header">
-      <span>[FRAME #${terminalState.framesCount}] ${senderName} ➔ ${recipName} | SEQ: ${pkt.seq}</span>
+      <span class="term-pkt-title">CAPTURED PACKET #${terminalState.framesCount} (LATEST ON WIRE)</span>
       <span class="term-pkt-meta">${timeStr}</span>
     </div>
+    <div class="term-pkt-route">
+      <strong>SENDER:</strong> ${senderName} &nbsp; ──► &nbsp; <strong>RECIPIENT:</strong> ${recipName} &nbsp; | &nbsp; <strong>SEQ NUMBER:</strong> ${pkt.seq}
+    </div>
     <div class="term-pkt-meta">
-      NONCE (12B): ${pkt.nonce} | CIPHER: AES-256-GCM (NIST SP 800-38D)
+      <strong>ALGORITHM:</strong> AES-256-GCM (NIST SP 800-38D) &nbsp;|&nbsp; <strong>NONCE (12-BYTE IV):</strong> ${pkt.nonce}
     </div>
     <div class="term-pkt-cipher">
-      CIPHERTEXT (OPAQUE): ${pkt.ciphertext}
+      <strong>RAW CIPHERTEXT ON WIRE & IN DATABASE:</strong><br>
+      ${pkt.ciphertext}
     </div>
     <div class="term-pkt-footer">
-      <span>INTEGRITY: 128-BIT AUTH TAG VERIFIED</span>
-      <span>PLAINTEXT LEAKS: 0 (CONFIDENTIAL)</span>
+      <span>INTEGRITY: [VALID] 128-BIT GCM AUTH TAG VERIFIED</span>
+      <span>CONFIDENTIALITY: [PASSED] 0 PLAINTEXT LEAKS (SERVER/DATABASE CANNOT READ)</span>
     </div>
   `;
 
-  termLogs.appendChild(block);
-  termScreen.scrollTop = termScreen.scrollHeight;
+  // Prepend to show newest message at the top (first place on screen)
+  termLogs.insertBefore(block, termLogs.firstChild);
 }

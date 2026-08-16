@@ -105,25 +105,39 @@ body.term-body {
 
 .term-pkt-header {
   color: #00e5ff;
-  font-weight: 600;
+  font-weight: 700;
   display: flex;
   justify-content: space-between;
   border-bottom: 1px solid #1a1a1a;
-  padding-bottom: 4px;
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.term-pkt-title {
+  color: #39ff14;
+}
+
+.term-pkt-route {
+  color: #ffffff;
+  font-size: 13px;
   margin-bottom: 6px;
 }
 
 .term-pkt-meta {
   color: #aaaaaa;
+  font-size: 12px;
 }
 
 .term-pkt-cipher {
   color: #ffd700;
   word-break: break-all;
   background: #000000;
-  padding: 4px 8px;
-  border: 1px solid #1a1a1a;
-  margin: 6px 0;
+  padding: 8px 10px;
+  border: 1px solid #222222;
+  margin: 8px 0;
+  font-size: 12px;
+  line-height: 1.5;
 }
 
 .term-pkt-footer {
@@ -131,4 +145,9 @@ body.term-body {
   font-size: 11px;
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  border-top: 1px solid #1a1a1a;
+  padding-top: 6px;
+  margin-top: 4px;
 }
