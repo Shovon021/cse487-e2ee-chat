@@ -1,12 +1,32 @@
-/**
- * Instagram DM Style E2EE Client Controller
- * 
- * Inter-tab & multi-device communication via BroadcastChannel and Web Crypto API.
- */
-
 const params = new URLSearchParams(window.location.search);
-const currentUser = params.get('user') || 'Alice';
-const peerUser = currentUser.toLowerCase() === 'alice' ? 'Bob' : 'Alice';
+const rawUserParam = params.get('user') || 'Syeda';
+
+// User Profiles
+const userProfiles = {
+  'syeda': {
+    id: 'Syeda',
+    fullName: 'Syeda Hasan',
+    igHandle: 'syeda_hasan',
+    peerId: 'Rukaiya',
+    peerFullName: 'Rukaiya Binta Hossain',
+    peerIgHandle: 'rukaiya_hossain',
+    avatarChar: 'S',
+    peerAvatarChar: 'R'
+  },
+  'rukaiya': {
+    id: 'Rukaiya',
+    fullName: 'Rukaiya Binta Hossain',
+    igHandle: 'rukaiya_hossain',
+    peerId: 'Syeda',
+    peerFullName: 'Syeda Hasan',
+    peerIgHandle: 'syeda_hasan',
+    avatarChar: 'R',
+    peerAvatarChar: 'S'
+  }
+};
+
+const userKey = rawUserParam.toLowerCase().includes('rukaiya') ? 'rukaiya' : 'syeda';
+const activeProfile = userProfiles[userKey];
 
 // Setup broadcast channel for inter-tab communication (local fallback)
 const networkChannel = new BroadcastChannel('e2ee_wire_bus');
@@ -54,8 +74,17 @@ function initWebSocketRelay() {
 }
 
 const clientState = {
-  me: currentUser,
-  peer: peerUser,
+  me: activeProfile.id,
+  peer: activeProfile.peerId,
+  profile: activeProfile,
+  keyPair: null,
+  pubRaw: null,
+  pubB64: '',
+  sessionKey: null,
+  seqOut: 0,
+  seqIn: 0,
+  safetyNumber: 'Generating...'
+};
   keyPair: null,
   pubRaw: null,
   pubB64: '',
@@ -304,13 +333,13 @@ networkChannel.onmessage = async (e) => {
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Update Header with Current User and Peer
-  document.getElementById('peerUsername').innerText = `${clientState.peer.toLowerCase()}_security`;
-  document.getElementById('peerAvatar').innerText = clientState.peer.charAt(0).toUpperCase();
-  document.getElementById('currentMyUsername').innerText = clientState.me;
-  document.getElementById('safetyPeerName').innerText = clientState.peer;
+  document.getElementById('peerUsername').innerText = clientState.profile.peerIgHandle;
+  document.getElementById('peerAvatar').innerText = clientState.profile.peerAvatarChar;
+  document.getElementById('currentMyUsername').innerText = `${clientState.profile.fullName} (@${clientState.profile.igHandle})`;
+  document.getElementById('safetyPeerName').innerText = clientState.profile.peerFullName;
 
   const switchLink = document.getElementById('switchUserLink');
-  switchLink.innerText = `Switch to ${clientState.peer}`;
+  switchLink.innerText = `Switch to ${clientState.profile.peerFullName}`;
   switchLink.href = `chat.html?user=${clientState.peer}`;
 
   document.getElementById('btnBack').addEventListener('click', () => {
