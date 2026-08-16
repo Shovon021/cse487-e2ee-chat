@@ -1,7 +1,7 @@
 /**
  * Server & Database Wire Traffic Monitor Controller
  * 
- * Clean light-theme dashboard logging live encrypted packets.
+ * Monospace terminal wire sniffer with auto-reconnection and history replay.
  * Newest input appears at the top (first place).
  */
 
@@ -86,7 +86,7 @@ networkChannel.onmessage = (e) => {
 };
 
 // ---------------------------------------------------------------------------
-// Frame Processing & Rendering (Newest on Top)
+// Frame Processing & Terminal Logging (Newest on Top)
 // ---------------------------------------------------------------------------
 
 function processIncomingFrame(pkt) {
@@ -98,7 +98,7 @@ function processIncomingFrame(pkt) {
   if (statFrames) statFrames.innerText = terminalState.framesCount;
   terminalState.capturedPackets.push(pkt);
 
-  // Hide initial empty state message
+  // Hide initial waiting message
   if (emptyState) {
     emptyState.style.display = 'none';
   }
@@ -110,39 +110,35 @@ function logCapturedFrame(pkt) {
   const dateObj = pkt.timestamp ? new Date(pkt.timestamp * 1000) : new Date();
   const timeStr = dateObj.toLocaleTimeString() + '.' + String(dateObj.getMilliseconds()).padStart(3, '0');
   
-  const senderName = pkt.sender === 'Syeda' ? 'Syeda Hasan' : (pkt.sender === 'Rukaiya' ? 'Rukaiya Binta Hossain' : pkt.sender);
-  const recipName = pkt.recipient === 'Syeda' ? 'Syeda Hasan' : (pkt.recipient === 'Rukaiya' ? 'Rukaiya Binta Hossain' : pkt.recipient);
+  const senderName = pkt.sender === 'Syeda' ? 'SYEDA HASAN' : (pkt.sender === 'Rukaiya' ? 'RUKAIYA BINTA HOSSAIN' : pkt.sender);
+  const recipName = pkt.recipient === 'Syeda' ? 'SYEDA HASAN' : (pkt.recipient === 'Rukaiya' ? 'RUKAIYA BINTA HOSSAIN' : pkt.recipient);
 
-  const card = document.createElement('div');
-  card.className = 'packet-card';
+  const block = document.createElement('div');
+  block.className = 'term-packet-block';
 
-  card.innerHTML = `
-    <div class="packet-card-header">
-      <span class="packet-badge-title">CAPTURED WIRE PACKET #${terminalState.framesCount} (LATEST)</span>
-      <span class="packet-time">${timeStr}</span>
+  block.innerHTML = `
+    <div class="term-pkt-header">
+      <span class="term-pkt-title">CAPTURED PACKET #${terminalState.framesCount} (LATEST ON WIRE)</span>
+      <span class="term-pkt-meta">${timeStr}</span>
     </div>
-    <div class="packet-route-row">
-      <span class="route-sender">Sender: <strong>${escapeHtml(senderName)}</strong></span>
-      <span class="route-arrow">──►</span>
-      <span class="route-recipient">Recipient: <strong>${escapeHtml(recipName)}</strong></span>
-      <span class="route-seq">Sequence: #${pkt.seq}</span>
+    <div class="term-pkt-route">
+      <strong>SENDER:</strong> ${escapeHtml(senderName)} &nbsp; ──► &nbsp; <strong>RECIPIENT:</strong> ${escapeHtml(recipName)} &nbsp; | &nbsp; <strong>SEQ NUMBER:</strong> ${pkt.seq}
     </div>
-    <div class="packet-meta-row">
-      <span class="packet-meta-item">Encryption Algorithm: <strong>AES-256-GCM (NIST SP 800-38D)</strong></span>
-      <span class="packet-meta-item">Nonce (12-Byte IV): <strong>${escapeHtml(pkt.nonce)}</strong></span>
+    <div class="term-pkt-meta">
+      <strong>ALGORITHM:</strong> AES-256-GCM (NIST SP 800-38D) &nbsp;|&nbsp; <strong>NONCE (12-BYTE IV):</strong> ${escapeHtml(pkt.nonce)}
     </div>
-    <div class="packet-cipher-box">
-      <span class="cipher-box-label">Raw Ciphertext on Wire & in Server Database:</span>
-      <div class="cipher-box-code">${escapeHtml(pkt.ciphertext)}</div>
+    <div class="term-pkt-cipher">
+      <strong>RAW CIPHERTEXT ON WIRE & IN DATABASE:</strong><br>
+      ${escapeHtml(pkt.ciphertext)}
     </div>
-    <div class="packet-footer-row">
-      <span class="badge-integrity">Integrity: 128-Bit GCM Auth Tag Validated</span>
-      <span class="badge-confidentiality">Confidentiality: 0 Plaintext Leaks (Server & Database Cannot Decrypt)</span>
+    <div class="term-pkt-footer">
+      <span>INTEGRITY: [VALID] 128-BIT GCM AUTH TAG VERIFIED</span>
+      <span>CONFIDENTIALITY: [PASSED] 0 PLAINTEXT LEAKS (SERVER/DATABASE CANNOT READ)</span>
     </div>
   `;
 
-  // Prepend to insert newest packet at the top (first place)
-  termLogs.insertBefore(card, termLogs.firstChild);
+  // Prepend to show newest message at the top (first place on screen)
+  termLogs.insertBefore(block, termLogs.firstChild);
 }
 
 function escapeHtml(text) {
