@@ -8,11 +8,12 @@ real-time multi-device WebSocket routing on the EXACT SAME PORT (Port 5000 / $PO
 import os
 import sys
 import mimetypes
-import http
 import json
 import asyncio
 from typing import Dict, Set
 import websockets
+import websockets.http11 as http11
+import websockets.datastructures as ds
 from rich.console import Console
 from rich.panel import Panel
 
@@ -46,8 +47,8 @@ async def process_http_request(connection, request):
     Handle HTTP requests on the same port.
     If the request has 'Upgrade: websocket', return None so websockets handles it.
     """
-    headers = {k.lower(): v for k, v in request.headers.items()}
-    if headers.get("upgrade", "").lower() == "websocket":
+    headers_dict = {k.lower(): v for k, v in request.headers.items()}
+    if headers_dict.get("upgrade", "").lower() == "websocket":
         return None  # Let WebSocket handler process it
 
     # Standard HTTP GET file serving
@@ -62,9 +63,17 @@ async def process_http_request(connection, request):
         file_path = os.path.realpath(file_path)
         real_web_dir = os.path.realpath(WEB_DIR)
         if not file_path.startswith(real_web_dir):
-            return connection.respond(http.HTTPStatus.FORBIDDEN, [("Content-Type", "text/plain")], b"403 Forbidden")
+            return http11.Response(
+                403, "Forbidden",
+                ds.Headers([("Content-Type", "text/plain")]),
+                b"403 Forbidden"
+            )
     except Exception:
-        return connection.respond(http.HTTPStatus.BAD_REQUEST, [("Content-Type", "text/plain")], b"400 Bad Request")
+        return http11.Response(
+            400, "Bad Request",
+            ds.Headers([("Content-Type", "text/plain")]),
+            b"400 Bad Request"
+        )
 
     if os.path.isfile(file_path):
         mime_type, _ = mimetypes.guess_type(file_path)
@@ -75,20 +84,28 @@ async def process_http_request(connection, request):
         try:
             with open(file_path, "rb") as f:
                 content = f.read()
-            return connection.respond(
-                http.HTTPStatus.OK,
-                [
+            return http11.Response(
+                200, "OK",
+                ds.Headers([
                     ("Content-Type", mime_type),
                     ("Content-Length", str(len(content))),
                     ("Access-Control-Allow-Origin", "*"),
                     ("Cache-Control", "no-cache")
-                ],
+                ]),
                 content
             )
         except Exception as e:
-            return connection.respond(http.HTTPStatus.INTERNAL_SERVER_ERROR, [("Content-Type", "text/plain")], f"500 Server Error: {e}".encode())
+            return http11.Response(
+                500, "Server Error",
+                ds.Headers([("Content-Type", "text/plain")]),
+                f"500 Server Error: {e}".encode()
+            )
     else:
-        return connection.respond(http.HTTPStatus.NOT_FOUND, [("Content-Type", "text/plain")], b"404 Not Found")
+        return http11.Response(
+            404, "Not Found",
+            ds.Headers([("Content-Type", "text/plain")]),
+            b"404 Not Found"
+        )
 
 
 # ---------------------------------------------------------------------------
