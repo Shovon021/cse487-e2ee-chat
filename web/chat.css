@@ -1,0 +1,488 @@
+/* Instagram DM Design System */
+:root {
+  --ig-bg: #000000;
+  --ig-surface: #121212;
+  --ig-surface-border: #262626;
+  --ig-bubble-sent: #3797f0;
+  --ig-bubble-sent-grad: linear-gradient(135deg, #3797f0, #7f5af0);
+  --ig-bubble-received: #262626;
+  --ig-text: #ffffff;
+  --ig-text-secondary: #8e8e8e;
+  --ig-active-green: #22c55e;
+  --ig-input-bg: #262626;
+  --ig-blue-btn: #0095f6;
+  --ig-alert-bg: rgba(239, 68, 68, 0.15);
+  --ig-alert-border: #ef4444;
+  --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-code: 'Fira Code', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body.ig-body {
+  background-color: var(--ig-bg);
+  color: var(--ig-text);
+  font-family: var(--font-main);
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.ig-chat-app {
+  width: 100%;
+  max-width: 480px;
+  height: 100%;
+  max-height: 100vh;
+  background-color: var(--ig-bg);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border-left: 1px solid var(--ig-surface-border);
+  border-right: 1px solid var(--ig-surface-border);
+}
+
+@media (min-width: 768px) {
+  .ig-chat-app {
+    height: 94vh;
+    border-radius: 20px;
+    border: 1px solid var(--ig-surface-border);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
+  }
+}
+
+/* Header */
+.ig-header {
+  height: 64px;
+  padding: 0 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--ig-surface-border);
+  background-color: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(12px);
+  z-index: 10;
+}
+
+.ig-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ig-profile-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.ig-avatar-wrapper {
+  position: relative;
+}
+
+.ig-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+  color: #fff;
+}
+
+.ig-active-dot {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  background-color: var(--ig-active-green);
+  border: 2px solid var(--ig-bg);
+  border-radius: 50%;
+}
+
+.ig-profile-info h2 {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.ig-status-text {
+  font-size: 11px;
+  color: var(--ig-text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ig-lock-badge {
+  font-size: 10px;
+  color: #38bdf8;
+}
+
+.ig-header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.ig-icon-btn {
+  background: none;
+  border: none;
+  color: var(--ig-text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  transition: opacity 0.2s ease;
+}
+
+.ig-icon-btn:hover {
+  opacity: 0.7;
+}
+
+/* Chat Messages Container */
+.ig-messages-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ig-chat-date {
+  align-self: center;
+  font-size: 11px;
+  color: var(--ig-text-secondary);
+  margin-bottom: 8px;
+}
+
+.ig-e2ee-notice {
+  align-self: center;
+  max-width: 85%;
+  background: rgba(38, 38, 38, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 10px 14px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--ig-text-secondary);
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+
+.ig-notice-icon {
+  font-size: 16px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* Message Rows */
+.ig-msg-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  max-width: 78%;
+  animation: igMsgAppear 0.2s ease-out;
+}
+
+@keyframes igMsgAppear {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.ig-msg-sent-row {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.ig-msg-received-row {
+  align-self: flex-start;
+}
+
+.ig-msg-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+  margin-bottom: 2px;
+}
+
+.ig-bubble {
+  padding: 10px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.ig-msg-sent-row .ig-bubble {
+  background: var(--ig-bubble-sent-grad);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+
+.ig-msg-received-row .ig-bubble {
+  background-color: var(--ig-bubble-received);
+  color: var(--ig-text);
+  border-bottom-left-radius: 4px;
+}
+
+.ig-seen-label {
+  align-self: flex-end;
+  font-size: 10px;
+  color: var(--ig-text-secondary);
+  margin-top: -6px;
+  margin-right: 4px;
+}
+
+.ig-alert-box {
+  align-self: center;
+  width: 90%;
+  background: var(--ig-alert-bg);
+  border: 1px solid var(--ig-alert-border);
+  color: #fca5a5;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+/* Footer / Input Bar (Instagram Pill) */
+.ig-footer {
+  padding: 12px 16px;
+  background-color: var(--ig-bg);
+  border-top: 1px solid var(--ig-surface-border);
+}
+
+.ig-input-pill {
+  background-color: var(--ig-input-bg);
+  border-radius: 26px;
+  display: flex;
+  align-items: center;
+  padding: 4px 6px 4px 6px;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.ig-camera-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background-color: var(--ig-blue-btn);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+
+.ig-camera-btn:active {
+  transform: scale(0.92);
+}
+
+.ig-input-pill input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--ig-text);
+  font-family: var(--font-main);
+  font-size: 14px;
+  padding: 6px 4px;
+}
+
+.ig-input-pill input::placeholder {
+  color: var(--ig-text-secondary);
+}
+
+.ig-input-icons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ig-inline-btn {
+  background: none;
+  border: none;
+  color: var(--ig-text);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ig-send-text-btn {
+  background: none;
+  border: none;
+  color: var(--ig-blue-btn);
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 6px 12px;
+  display: none;
+}
+
+.ig-send-text-btn:active {
+  opacity: 0.6;
+}
+
+/* Modal Bottom Sheet */
+.ig-modal-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+  display: none;
+  align-items: flex-end;
+  z-index: 100;
+}
+
+.ig-modal-backdrop.open {
+  display: flex;
+}
+
+.ig-modal-sheet {
+  width: 100%;
+  background: #1e1e1e;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  padding: 16px 20px 28px 20px;
+  animation: igSlideUp 0.25s ease-out;
+  border-top: 1px solid var(--ig-surface-border);
+}
+
+@keyframes igSlideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.ig-modal-handle {
+  width: 36px;
+  height: 4px;
+  background: #555;
+  border-radius: 2px;
+  margin: 0 auto 14px auto;
+}
+
+.ig-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.ig-modal-header h3 {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.ig-modal-close {
+  background: none;
+  border: none;
+  color: var(--ig-text-secondary);
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.ig-encryption-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.ig-badge-shield {
+  font-size: 28px;
+}
+
+.ig-encryption-badge h4 {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ig-encryption-badge p {
+  font-size: 11px;
+  color: var(--ig-text-secondary);
+  margin-top: 2px;
+}
+
+.ig-safety-section {
+  margin-bottom: 16px;
+}
+
+.ig-section-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ig-text-secondary);
+  font-weight: 600;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.ig-safety-code {
+  font-family: var(--font-code);
+  font-size: 14px;
+  font-weight: 700;
+  background: #121212;
+  border: 1px solid var(--ig-surface-border);
+  padding: 10px 14px;
+  border-radius: 8px;
+  color: #38bdf8;
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+
+.ig-safety-tip {
+  font-size: 11px;
+  color: var(--ig-text-secondary);
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+.ig-user-switch-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #121212;
+  border: 1px solid var(--ig-surface-border);
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.ig-link {
+  color: var(--ig-blue-btn);
+  text-decoration: none;
+  font-weight: 600;
+}

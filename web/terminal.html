@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terminal Relay Monitor • CSE 487</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="terminal.css">
+</head>
+<body class="term-body">
+  <div class="crt-overlay"></div>
+
+  <!-- Terminal Window Container -->
+  <div class="term-window">
+    
+    <!-- Terminal Titlebar -->
+    <div class="term-titlebar">
+      <div class="term-controls">
+        <span class="term-dot dot-red"></span>
+        <span class="term-dot dot-yellow"></span>
+        <span class="term-dot dot-green"></span>
+      </div>
+      <div class="term-title">
+        root@relay-node-01: /var/log/e2ee-traffic (ZERO-KNOWLEDGE WIRE SNIFFER)
+      </div>
+      <div class="term-actions">
+        <a href="index.html" class="term-nav-btn">LAUNCHPAD</a>
+      </div>
+    </div>
+
+    <!-- Live Telemetry Status Bar -->
+    <div class="term-stats-bar">
+      <div class="stat-item">
+        <span class="stat-label">STATUS:</span>
+        <span class="stat-val text-green">● ACTIVE RELAY</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">CIPHER:</span>
+        <span class="stat-val text-cyan">AES-256-GCM (AEAD)</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">KEY EXCHANGE:</span>
+        <span class="stat-val text-cyan">X25519 (CURVE25519)</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">FRAMES CAPTURED:</span>
+        <span class="stat-val text-yellow" id="statFrames">0</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">PLAINTEXT LEAKS:</span>
+        <span class="stat-val text-green" id="statLeaks">0 (0.00% - ZERO)</span>
+      </div>
+    </div>
+
+    <!-- Terminal Screen Log Feed -->
+    <div class="term-screen" id="termScreen">
+      <pre class="term-ascii-banner">
+  ███████╗██████╗ ███████╗███████╗    ██████╗ ███████╗██╗      █████╗ ██╗   ██╗
+  ██╔════╝╚════██╗██╔════╝██╔════╝    ██╔══██╗██╔════╝██║     ██╔══██╗╚██╗ ██╔╝
+  █████╗   █████╔╝█████╗  █████╗      ██████╔╝█████╗  ██║     ███████║ ╚████╔╝ 
+  ██╔══╝  ██╔═══╝ ██╔══╝  ██╔══╝      ██╔══██╗██╔══╝  ██║     ██╔══██║  ╚██╔╝  
+  ███████╗███████╗███████╗███████╗    ██║  ██║███████╗███████╗██║  ██║   ██║   
+  ╚══════╝╚══════╝╚══════╝╚══════╝    ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝   ╚═╝   
+      [ ZERO-KNOWLEDGE PACKET INSPECTOR & RED-TEAM ATTACK CONTROLLER ]
+      [ CSE 487 • COMPUTER & CYBER SECURITY • REAL-TIME WIRE MONITOR ]
+      </pre>
+
+      <div class="term-log-line text-dim">
+        [INIT] Listening on physical loopback and virtual BroadcastChannel wire...
+      </div>
+      <div class="term-log-line text-dim">
+        [INFO] Type <span class="text-yellow">help</span> to view available red-team injection commands.
+      </div>
+      <div class="term-log-divider"></div>
+
+      <!-- Live logs appended here -->
+      <div id="termLogs"></div>
+    </div>
+
+    <!-- Terminal Prompt & Command Bar -->
+    <div class="term-prompt-bar">
+      <span class="term-prompt-label">root@relay-node-01:~#</span>
+      <input type="text" id="termInput" placeholder="type 'help', 'mitm', 'tamper', 'replay', 'db', or 'clear'..." autocomplete="off" autofocus>
+    </div>
+
+  </div>
+
+  <script src="terminal.js"></script>
+</body>
+</html>

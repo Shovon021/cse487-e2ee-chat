@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSE 487 • Secure E2EE Chat Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header Bar -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="logo-badge">
+        <span class="lock-icon">🔒</span>
+        <div>
+          <h1>CSE 487: End-to-End Encrypted (E2EE) Chat Studio</h1>
+          <p class="subtitle">Instagram DM Client Interface • Cyber Terminal Wire Sniffer • Curve25519 • AES-256-GCM</p>
+        </div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="status-indicator">
+        <span class="status-dot active"></span>
+        <span>Relay Online</span>
+      </div>
+      <a href="terminal.html" target="_blank" class="btn btn-secondary">
+        💻 Open Fullscreen Terminal
+      </a>
+    </div>
+  </header>
+
+  <!-- Launchpad Quick Navigation Bar -->
+  <div class="launchpad-bar">
+    <span class="launchpad-title">🚀 Launch Separate Device Tabs:</span>
+    <div class="launch-links">
+      <a href="chat.html?user=Alice" target="_blank" class="launch-card-btn alice-link">
+        📱 Alice's Instagram DM <span class="ext-icon">↗</span>
+      </a>
+      <a href="chat.html?user=Bob" target="_blank" class="launch-card-btn bob-link">
+        📱 Bob's Instagram DM <span class="ext-icon">↗</span>
+      </a>
+      <a href="terminal.html" target="_blank" class="launch-card-btn term-link">
+        🖥️ Terminal Wire Monitor <span class="ext-icon">↗</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Live Multi-View Presentation Canvas -->
+  <main class="studio-presentation-grid">
+    
+    <!-- Left: Alice's Instagram Client (Embedded Frame) -->
+    <div class="frame-wrapper">
+      <div class="frame-label">
+        <span class="label-dot dot-alice"></span> 👤 Alice's Phone View (Instagram DM)
+        <a href="chat.html?user=Alice" target="_blank" class="popout-link">Popout ↗</a>
+      </div>
+      <iframe src="chat.html?user=Alice" class="studio-iframe" title="Alice Instagram Chat"></iframe>
+    </div>
+
+    <!-- Center: Terminal Wire Monitor (Embedded Frame) -->
+    <div class="frame-wrapper monitor-frame-wrapper">
+      <div class="frame-label">
+        <span class="label-dot dot-term"></span> 🖥️ Zero-Knowledge Relay Terminal
+        <a href="terminal.html" target="_blank" class="popout-link">Popout ↗</a>
+      </div>
+      <iframe src="terminal.html" class="studio-iframe" title="Terminal Relay Monitor"></iframe>
+    </div>
+
+    <!-- Right: Bob's Instagram Client (Embedded Frame) -->
+    <div class="frame-wrapper">
+      <div class="frame-label">
+        <span class="label-dot dot-bob"></span> 👤 Bob's Phone View (Instagram DM)
+        <a href="chat.html?user=Bob" target="_blank" class="popout-link">Popout ↗</a>
+      </div>
+      <iframe src="chat.html?user=Bob" class="studio-iframe" title="Bob Instagram Chat"></iframe>
+    </div>
+
+  </main>
+</body>
+</html>

@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: cse487-e2ee-chat
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python web_server.py
+    plan: free

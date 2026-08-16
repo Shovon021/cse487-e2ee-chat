@@ -1,0 +1,238 @@
+/* Terminal Monitor Design System */
+:root {
+  --term-bg: #0c1017;
+  --term-surface: #06090e;
+  --term-border: #1f293d;
+  --term-green: #39ff14;
+  --term-cyan: #00f2fe;
+  --term-yellow: #ffd000;
+  --term-red: #ff3366;
+  --term-text: #e6edf3;
+  --term-dim: #7d8590;
+  --font-term: 'Fira Code', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body.term-body {
+  background-color: var(--term-surface);
+  color: var(--term-text);
+  font-family: var(--font-term);
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  overflow: hidden;
+}
+
+/* CRT Scanline Filter */
+.crt-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.25) 50%
+  );
+  background-size: 100% 4px;
+  z-index: 1000;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* Window Shell */
+.term-window {
+  width: 100%;
+  max-width: 1300px;
+  height: 94vh;
+  background-color: var(--term-bg);
+  border: 1px solid var(--term-border);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 242, 254, 0.05);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Titlebar */
+.term-titlebar {
+  background: #090d14;
+  height: 38px;
+  border-bottom: 1px solid var(--term-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+}
+
+.term-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.term-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.dot-red { background: #ff5f56; }
+.dot-yellow { background: #ffbd2e; }
+.dot-green { background: #27c93f; }
+
+.term-title {
+  font-size: 12px;
+  color: var(--term-dim);
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+.term-nav-btn {
+  font-size: 11px;
+  color: var(--term-cyan);
+  text-decoration: none;
+  background: rgba(0, 242, 254, 0.1);
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 242, 254, 0.3);
+  transition: all 0.2s ease;
+}
+
+.term-nav-btn:hover {
+  background: var(--term-cyan);
+  color: #000;
+}
+
+/* Telemetry Stats Bar */
+.term-stats-bar {
+  display: flex;
+  gap: 20px;
+  padding: 10px 18px;
+  background: rgba(0, 0, 0, 0.4);
+  border-bottom: 1px solid var(--term-border);
+  flex-wrap: wrap;
+  font-size: 11px;
+}
+
+.stat-item {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.stat-label {
+  color: var(--term-dim);
+  font-weight: 600;
+}
+
+.stat-val {
+  font-weight: 700;
+}
+
+/* Color Classes */
+.text-green { color: var(--term-green); text-shadow: 0 0 6px rgba(57, 255, 20, 0.4); }
+.text-cyan { color: var(--term-cyan); text-shadow: 0 0 6px rgba(0, 242, 254, 0.4); }
+.text-yellow { color: var(--term-yellow); text-shadow: 0 0 6px rgba(255, 208, 0, 0.4); }
+.text-red { color: var(--term-red); text-shadow: 0 0 6px rgba(255, 51, 102, 0.4); }
+.text-dim { color: var(--term-dim); }
+
+/* Screen Feed */
+.term-screen {
+  flex: 1;
+  padding: 16px 20px;
+  overflow-y: auto;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--term-text);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.term-ascii-banner {
+  color: var(--term-cyan);
+  font-size: 10px;
+  line-height: 1.15;
+  margin-bottom: 12px;
+  opacity: 0.9;
+  text-shadow: 0 0 8px rgba(0, 242, 254, 0.3);
+}
+
+.term-log-divider {
+  height: 1px;
+  background: var(--term-border);
+  margin: 8px 0;
+}
+
+/* Log Entries */
+.term-log-card {
+  background: rgba(255, 255, 255, 0.02);
+  border-left: 3px solid var(--term-cyan);
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-bottom: 6px;
+  font-size: 12px;
+  animation: termCardFade 0.2s ease-out;
+}
+
+@keyframes termCardFade {
+  from { opacity: 0; transform: translateX(-6px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.term-log-card.tamper-card {
+  border-left-color: var(--term-red);
+  background: rgba(255, 51, 102, 0.05);
+}
+
+.term-card-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.term-card-body {
+  font-size: 11px;
+  word-break: break-all;
+  color: var(--term-yellow);
+  background: rgba(0, 0, 0, 0.3);
+  padding: 4px 8px;
+  border-radius: 3px;
+  margin-top: 4px;
+}
+
+/* Prompt Bar */
+.term-prompt-bar {
+  display: flex;
+  align-items: center;
+  padding: 12px 18px;
+  background: #090d14;
+  border-top: 1px solid var(--term-border);
+  gap: 10px;
+}
+
+.term-prompt-label {
+  color: var(--term-green);
+  font-weight: 700;
+  font-size: 13px;
+  text-shadow: 0 0 6px rgba(57, 255, 20, 0.4);
+}
+
+.term-prompt-bar input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--term-text);
+  font-family: var(--font-term);
+  font-size: 13px;
+}
