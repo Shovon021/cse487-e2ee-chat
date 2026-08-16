@@ -122,11 +122,16 @@ async def ws_relay_handler(websocket):
                 data = json.loads(raw_message)
                 msg_type = data.get("type")
 
+                # Heartbeat Ping
+                if msg_type == "PING":
+                    await websocket.send(json.dumps({"type": "PONG"}))
+                    continue
+
                 # Monitor Registration
                 if msg_type == "REGISTER_MONITOR":
                     client_type = "monitor"
                     monitor_clients.add(websocket)
-                    # Send existing history to new monitor
+                    # Send entire existing history to newly connected monitor
                     if message_history:
                         await websocket.send(json.dumps({
                             "type": "HISTORY_DUMP",
@@ -142,17 +147,15 @@ async def ws_relay_handler(websocket):
                         connected_clients[username] = websocket
                         if pub_b64:
                             registered_keys[username] = pub_b64
-                        console.print(f"[bold green]📱 Device Connected:[/bold green] [cyan]{username}[/cyan]")
+                        console.print(f"[bold green]📱 Device Online:[/bold green] [cyan]{username}[/cyan]")
                         
-                        # Forward to all monitors
-                        for mon_ws in list(monitor_clients):
-                            try:
-                                await mon_ws.send(json.dumps({
-                                    "type": "USER_ONLINE",
-                                    "username": username
-                                }))
-                            except Exception:
-                                monitor_clients.discard(mon_ws)
+                        # Deliver historical/offline messages destined for this user
+                        user_messages = [msg for msg in message_history if msg.get("recipient") == username]
+                        if user_messages:
+                            await websocket.send(json.dumps({
+                                "type": "USER_HISTORY_DUMP",
+                                "messages": user_messages
+                            }))
 
                 # Direct Encrypted Message Relay
                 elif msg_type == "MSG_DIRECT":
@@ -178,7 +181,7 @@ async def ws_relay_handler(websocket):
                         "timestamp": timestamp
                     }
                     message_history.append(packet_record)
-                    if len(message_history) > 100:
+                    if len(message_history) > 200:
                         message_history.pop(0)
 
                     # 1. Forward to Recipient Phone

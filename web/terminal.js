@@ -1,6 +1,6 @@
 /**
  * Minimalist Terminal Wire Monitor
- * No animations, pure terminal text stream.
+ * No animations, pure terminal text stream with auto-reconnection and history replay.
  */
 
 const networkChannel = new BroadcastChannel('e2ee_wire_bus');
@@ -16,38 +16,60 @@ const emptyState = document.getElementById('emptyState');
 const statFrames = document.getElementById('statFrames');
 
 // ---------------------------------------------------------------------------
-// Multi-Device WebSocket Relay Listener (Same Host & Port)
+// Multi-Device WebSocket Relay Listener (Auto-Reconnect + Keep-Alive)
 // ---------------------------------------------------------------------------
 
 let wsRelay = null;
+let wsHeartbeatTimer = null;
 const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
 const wsUrl = `${wsProtocol}//${window.location.host}/ws`;
 
 function initTerminalWebSocket() {
-  try {
-    wsRelay = new WebSocket(wsUrl);
+  function connect() {
+    try {
+      wsRelay = new WebSocket(wsUrl);
 
-    wsRelay.onopen = () => {
-      wsRelay.send(JSON.stringify({ type: "REGISTER_MONITOR" }));
-    };
+      wsRelay.onopen = () => {
+        console.log("Terminal connected to WebSocket relay:", wsUrl);
+        wsRelay.send(JSON.stringify({ type: "REGISTER_MONITOR" }));
 
-    wsRelay.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        if (data.type === 'MSG_DIRECT') {
-          processIncomingFrame(data);
-        } else if (data.type === 'HISTORY_DUMP') {
-          if (data.history && data.history.length > 0) {
-            data.history.forEach(p => processIncomingFrame(p));
+        clearInterval(wsHeartbeatTimer);
+        wsHeartbeatTimer = setInterval(() => {
+          if (wsRelay && wsRelay.readyState === WebSocket.OPEN) {
+            wsRelay.send(JSON.stringify({ type: "PING" }));
           }
+        }, 20000);
+      };
+
+      wsRelay.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (data.type === 'MSG_DIRECT') {
+            processIncomingFrame(data);
+          } else if (data.type === 'HISTORY_DUMP') {
+            if (data.history && data.history.length > 0) {
+              data.history.forEach(p => processIncomingFrame(p));
+            }
+          }
+        } catch (err) {
+          console.error("Monitor WS error", err);
         }
-      } catch (err) {
-        console.error("Monitor WS error", err);
-      }
-    };
-  } catch (e) {
-    console.log("WebSocket connect error, using BroadcastChannel");
+      };
+
+      wsRelay.onclose = () => {
+        clearInterval(wsHeartbeatTimer);
+        setTimeout(connect, 2000);
+      };
+
+      wsRelay.onerror = () => {
+        try { wsRelay.close(); } catch(e) {}
+      };
+    } catch (e) {
+      setTimeout(connect, 2000);
+    }
   }
+
+  connect();
 }
 
 initTerminalWebSocket();

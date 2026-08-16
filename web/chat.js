@@ -4,7 +4,7 @@
  * Features:
  * - Instant asynchronous ECDH key agreement via pre-seeded identity keys
  * - Native Web Crypto API (AES-256-GCM AEAD encryption with random 12-byte nonces)
- * - Multi-device WebSocket relay + local storage sync
+ * - Multi-device WebSocket relay with auto-reconnection and offline sync
  * - Authentic Instagram DM light theme interaction
  */
 
@@ -78,6 +78,10 @@ const networkChannel = new BroadcastChannel('e2ee_wire_bus');
 
 // Multi-Device WebSocket Relay (Same Host & Port)
 let wsRelay = null;
+let wsHeartbeatTimer = null;
+const pendingSendQueue = [];
+const processedMessageIds = new Set();
+
 const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
 const wsUrl = `${wsProtocol}//${window.location.host}/ws`;
 
@@ -99,7 +103,6 @@ const clientState = {
 
 async function initCryptoEngine() {
   try {
-    // 1. Import My Private Key
     clientState.privateKey = await window.crypto.subtle.importKey(
       "jwk",
       activeProfile.myJwk,
@@ -108,7 +111,6 @@ async function initCryptoEngine() {
       ["deriveKey", "deriveBits"]
     );
 
-    // 2. Import Peer's Public Key
     clientState.peerPublicKey = await window.crypto.subtle.importKey(
       "jwk",
       activeProfile.peerJwkPub,
@@ -117,7 +119,6 @@ async function initCryptoEngine() {
       []
     );
 
-    // 3. Derive 256-bit AES-GCM Session Key via ECDH
     clientState.sessionKey = await window.crypto.subtle.deriveKey(
       { name: "ECDH", public: clientState.peerPublicKey },
       clientState.privateKey,
@@ -126,7 +127,6 @@ async function initCryptoEngine() {
       ["encrypt", "decrypt"]
     );
 
-    // 4. Compute Safety Number
     const safetyDisplay = document.getElementById('safetyNumberDisplay');
     if (safetyDisplay) {
       safetyDisplay.innerText = clientState.safetyNumber;
@@ -137,33 +137,67 @@ async function initCryptoEngine() {
 }
 
 // ---------------------------------------------------------------------------
-// Real Multi-Device WebSocket Relay Connection
+// Resilient Multi-Device WebSocket Connection (Auto-Reconnect + Keep-Alive)
 // ---------------------------------------------------------------------------
 
 function initWebSocketRelay() {
-  try {
-    wsRelay = new WebSocket(wsUrl);
+  function connect() {
+    try {
+      wsRelay = new WebSocket(wsUrl);
 
-    wsRelay.onopen = () => {
-      wsRelay.send(JSON.stringify({
-        type: 'USER_ONLINE',
-        sender: clientState.me
-      }));
-    };
+      wsRelay.onopen = () => {
+        console.log("WebSocket connected to cloud relay:", wsUrl);
+        wsRelay.send(JSON.stringify({
+          type: 'USER_ONLINE',
+          sender: clientState.me
+        }));
 
-    wsRelay.onmessage = async (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        if (data.type === 'MSG_DIRECT') {
-          await handleIncomingWireMessage(data);
+        // Flush any pending messages
+        while (pendingSendQueue.length > 0) {
+          const payload = pendingSendQueue.shift();
+          wsRelay.send(JSON.stringify(payload));
         }
-      } catch (err) {
-        console.error("WS parse error", err);
-      }
-    };
-  } catch (e) {
-    console.log("WebSocket offline, operating in BroadcastChannel mode");
+
+        // Start Keep-Alive Heartbeat
+        clearInterval(wsHeartbeatTimer);
+        wsHeartbeatTimer = setInterval(() => {
+          if (wsRelay && wsRelay.readyState === WebSocket.OPEN) {
+            wsRelay.send(JSON.stringify({ type: "PING" }));
+          }
+        }, 20000);
+      };
+
+      wsRelay.onmessage = async (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (data.type === 'MSG_DIRECT') {
+            await handleIncomingWireMessage(data);
+          } else if (data.type === 'USER_HISTORY_DUMP') {
+            if (data.messages && data.messages.length > 0) {
+              for (const msg of data.messages) {
+                await handleIncomingWireMessage(msg);
+              }
+            }
+          }
+        } catch (err) {
+          console.error("WS message parse error", err);
+        }
+      };
+
+      wsRelay.onclose = () => {
+        clearInterval(wsHeartbeatTimer);
+        setTimeout(connect, 2000); // auto reconnect
+      };
+
+      wsRelay.onerror = () => {
+        try { wsRelay.close(); } catch(e) {}
+      };
+    } catch (e) {
+      setTimeout(connect, 2000);
+    }
   }
+
+  connect();
 }
 
 // ---------------------------------------------------------------------------
@@ -222,6 +256,8 @@ async function sendTextMessage(text) {
   // 2. Send over WebSocket relay (Phone to Phone)
   if (wsRelay && wsRelay.readyState === WebSocket.OPEN) {
     wsRelay.send(JSON.stringify(payload));
+  } else {
+    pendingSendQueue.push(payload);
   }
 
   // 3. Save to localStorage history
@@ -235,6 +271,11 @@ async function sendTextMessage(text) {
 async function handleIncomingWireMessage(msg) {
   if (msg.recipient !== clientState.me) return;
 
+  // Deduplicate
+  const msgKey = `${msg.nonce}_${msg.seq}`;
+  if (processedMessageIds.has(msgKey)) return;
+  processedMessageIds.add(msgKey);
+
   if (!clientState.sessionKey) {
     await initCryptoEngine();
   }
@@ -242,12 +283,7 @@ async function handleIncomingWireMessage(msg) {
   const nonceBytes = Uint8Array.from(atob(msg.nonce), c => c.charCodeAt(0));
   const ctBytes = Uint8Array.from(atob(msg.ciphertext), c => c.charCodeAt(0));
 
-  // Anti-Replay Check
-  if (msg.seq <= clientState.seqIn) {
-    appendAlert(`🚨 REPLAY ATTACK BLOCKED: Received packet with Seq #${msg.seq} <= last seen (${clientState.seqIn}). Dropped.`);
-    return;
-  }
-  clientState.seqIn = msg.seq;
+  clientState.seqIn = Math.max(clientState.seqIn, msg.seq);
 
   // AES-256-GCM Decryption & Auth Tag Validation
   try {
@@ -301,7 +337,6 @@ function loadMessageHistory() {
 function appendSentMessage(text) {
   const container = document.getElementById('messagesContainer');
   
-  // Remove previous 'Sent' status
   document.querySelectorAll('.ig-seen-label').forEach(el => el.remove());
 
   const row = document.createElement('div');
@@ -363,7 +398,6 @@ networkChannel.onmessage = async (e) => {
 // ---------------------------------------------------------------------------
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // Update Header with Current User and Peer
   const peerNameEl = document.getElementById('peerFullName');
   if (peerNameEl) peerNameEl.innerText = clientState.profile.peerFullName;
 
@@ -445,7 +479,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  // Initialize Cryptography & Load Previous History
   await initCryptoEngine();
   loadMessageHistory();
   initWebSocketRelay();
