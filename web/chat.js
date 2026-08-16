@@ -76,11 +76,10 @@ const activeProfile = userProfiles[userKey];
 // Broadcast channel for local inter-tab communication
 const networkChannel = new BroadcastChannel('e2ee_wire_bus');
 
-// Multi-Device WebSocket Relay
+// Multi-Device WebSocket Relay (Same Host & Port)
 let wsRelay = null;
 const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-const wsPort = window.location.port ? '8765' : '';
-const wsUrl = `${wsProtocol}//${window.location.hostname}${wsPort ? ':' + wsPort : ''}`;
+const wsUrl = `${wsProtocol}//${window.location.host}/ws`;
 
 const clientState = {
   me: activeProfile.id,

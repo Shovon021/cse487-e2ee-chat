@@ -16,13 +16,12 @@ const emptyState = document.getElementById('emptyState');
 const statFrames = document.getElementById('statFrames');
 
 // ---------------------------------------------------------------------------
-// Multi-Device WebSocket Relay Listener
+// Multi-Device WebSocket Relay Listener (Same Host & Port)
 // ---------------------------------------------------------------------------
 
 let wsRelay = null;
 const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-const wsPort = window.location.port ? '8765' : '';
-const wsUrl = `${wsProtocol}//${window.location.hostname}${wsPort ? ':' + wsPort : ''}`;
+const wsUrl = `${wsProtocol}//${window.location.host}/ws`;
 
 function initTerminalWebSocket() {
   try {
