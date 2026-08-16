@@ -179,9 +179,9 @@ def run_server():
             f"🌐 [bold cyan]HTTP Interface:[/bold cyan] http://0.0.0.0:{HTTP_PORT}\n"
             f"⚡ [bold magenta]WebSocket Relay:[/bold magenta] ws://0.0.0.0:{WS_PORT}\n\n"
             f"[bold yellow]Live Multi-Device Presentation URLs:[/bold yellow]\n"
-            f"  📱 [cyan]Phone 1 (Alice):[/cyan] http://<YOUR-IP>:{HTTP_PORT}/chat.html?user=Alice\n"
-            f"  📱 [cyan]Phone 2 (Bob):[/cyan]   http://<YOUR-IP>:{HTTP_PORT}/chat.html?user=Bob\n"
-            f"  💻 [cyan]Sir's Laptop:[/cyan]    http://<YOUR-IP>:{HTTP_PORT}/terminal.html\n\n"
+            f"  📱 [cyan]Phone 1 (Syeda):[/cyan]   http://<YOUR-IP>:{HTTP_PORT}/chat.html?user=Syeda\n"
+            f"  📱 [cyan]Phone 2 (Rukaiya):[/cyan] http://<YOUR-IP>:{HTTP_PORT}/chat.html?user=Rukaiya\n"
+            f"  💻 [cyan]Sir's Laptop:[/cyan]      http://<YOUR-IP>:{HTTP_PORT}/terminal.html\n\n"
             f"[dim]Press Ctrl+C to terminate.[/dim]",
             title="🛡️ Multi-Device E2EE Relay Ready",
             border_style="green"
