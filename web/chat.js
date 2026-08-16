@@ -1,15 +1,14 @@
-const params = new URLSearchParams(window.location.search);
-const rawUserParam = params.get('user') || 'Syeda';
-
-// User Profiles
+// User Profiles with custom resized photos
 const userProfiles = {
   'syeda': {
     id: 'Syeda',
     fullName: 'Syeda Hasan',
     igHandle: 'syeda_hasan',
+    avatarImg: 'syeda.jpg',
     peerId: 'Rukaiya',
     peerFullName: 'Rukaiya Binta Hossain',
     peerIgHandle: 'rukaiya_hossain',
+    peerAvatarImg: 'rukaiya.jpg',
     avatarChar: 'S',
     peerAvatarChar: 'R'
   },
@@ -17,9 +16,11 @@ const userProfiles = {
     id: 'Rukaiya',
     fullName: 'Rukaiya Binta Hossain',
     igHandle: 'rukaiya_hossain',
+    avatarImg: 'rukaiya.jpg',
     peerId: 'Syeda',
     peerFullName: 'Syeda Hasan',
     peerIgHandle: 'syeda_hasan',
+    peerAvatarImg: 'syeda.jpg',
     avatarChar: 'R',
     peerAvatarChar: 'S'
   }
@@ -283,7 +284,7 @@ function appendReceivedMessage(text) {
   const row = document.createElement('div');
   row.className = 'ig-msg-row ig-msg-received-row';
   row.innerHTML = `
-    <div class="ig-msg-avatar">${clientState.peer.charAt(0).toUpperCase()}</div>
+    <img class="ig-msg-avatar-img" src="${clientState.profile.peerAvatarImg}" alt="avatar">
     <div class="ig-bubble">${escapeHtml(text)}</div>
   `;
   container.appendChild(row);
@@ -339,8 +340,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   const peerHandleEl = document.getElementById('peerHandle');
   if (peerHandleEl) peerHandleEl.innerText = `@${clientState.profile.peerIgHandle}`;
 
-  const peerAvatarEl = document.getElementById('peerAvatar');
-  if (peerAvatarEl) peerAvatarEl.innerText = clientState.profile.peerAvatarChar;
+  const peerAvatarImgEl = document.getElementById('peerAvatarImg');
+  if (peerAvatarImgEl) {
+    peerAvatarImgEl.src = clientState.profile.peerAvatarImg;
+    peerAvatarImgEl.alt = clientState.profile.peerFullName;
+  }
 
   const noticePeerEl = document.getElementById('e2eeNoticePeer');
   if (noticePeerEl) noticePeerEl.innerText = clientState.profile.peerFullName;

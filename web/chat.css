@@ -86,28 +86,25 @@ body.ig-light-body {
 
 .ig-avatar-wrapper {
   position: relative;
+  width: 42px;
+  height: 42px;
 }
 
-.ig-avatar {
-  width: 40px;
-  height: 40px;
+.ig-avatar-img {
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 16px;
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(220, 39, 67, 0.25);
+  object-fit: cover;
+  display: block;
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .ig-active-dot {
   position: absolute;
   bottom: 0;
   right: 0;
-  width: 11px;
-  height: 11px;
+  width: 12px;
+  height: 12px;
   background-color: var(--ig-active-green);
   border: 2px solid #ffffff;
   border-radius: 50%;
@@ -220,19 +217,14 @@ body.ig-light-body {
   align-self: flex-start;
 }
 
-.ig-msg-avatar {
+.ig-msg-avatar-img {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #f09433, #dc2743);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 700;
+  object-fit: cover;
   flex-shrink: 0;
   margin-bottom: 2px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .ig-bubble {
