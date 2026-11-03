@@ -33,7 +33,20 @@ An End-to-End Encrypted (E2EE) Chat Application developed for **CSE 487 (Compute
 ```bash
 python web_server.py
 ```
-Open **[http://127.0.0.1:5000](http://127.0.0.1:5000)** in your browser to access the interactive Dual-Client Presentation Studio with real-time wire inspection and one-click attack triggers.
+📱 Phone 1 (Syeda Hasan):
+👉 https://cse487-e2ee-chat.onrender.com/chat.html?user=Syeda
+(Syeda chatting with Rukaiya with real photo & Instagram light theme).
+
+📱 Phone 2 (Rukaiya Binta Hossain):
+👉 https://cse487-e2ee-chat.onrender.com/chat.html?user=Rukaiya
+(Rukaiya chatting with Syeda with real photo & Instagram light theme).
+
+🖥️ Sir's Screen / Projector (Live Wire Sniffer Terminal):
+👉 https://cse487-e2ee-chat.onrender.com/terminal.html
+(Monitors all encrypted ciphertext frames in real time with 0 PLAINTEXT LEAKS).
+
+🌟 Master 3-in-1 Presentation Studio:
+👉 https://cse487-e2ee-chat.onrender.com
 
 ---
 
